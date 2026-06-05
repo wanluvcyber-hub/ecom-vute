@@ -7,18 +7,12 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
-const plugins = [
-  vue(),
-  vueJsx(),
-  tailwindcss()
-]
-
-if (process.env.VITE_ENABLE_VUE_DEVTOOLS === 'true') {
-  plugins.push(vueDevTools())
-}
-
 export default defineConfig({
-  plugins,
+  plugins: [
+    vue(),
+    vueJsx(),
+    tailwindcss()
+  ],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
