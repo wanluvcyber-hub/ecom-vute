@@ -1,2 +1,20 @@
 @import "tailwindcss";
 @plugin "daisyui";
+
+@layer components {
+  .btn {
+    @apply rounded-xl transition-all duration-300 active:scale-95;
+  }
+
+  .btn-primary {
+    @apply shadow-md hover:shadow-lg;
+  }
+
+  .card {
+    @apply rounded-3xl transition-all duration-300;
+  }
+
+  .input {
+    @apply rounded-xl focus:ring-2 focus:ring-primary/20 transition-all;
+  }
+}

@@ -24,7 +24,7 @@ const changQuantity = (event,index) =>{
         <div v-else class="flex" v-for="(i,index) in cartStore.items">
 
           <div class="flex-1">
-            <img class="w-full p-10" src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp">
+            <img class="w-full p-10" :src="i.imageUrl">
           </div>
 
           <div class="flex-1">

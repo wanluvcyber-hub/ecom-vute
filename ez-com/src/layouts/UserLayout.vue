@@ -3,28 +3,25 @@ import { RouterView,useRouter } from 'vue-router';
 import { ref ,onMounted,} from 'vue';
 import { useCartStore } from '@/stores/user/cart';
 
+import { useAccountStore } from '@/stores/account';
+
 const cartStore = useCartStore()
-const isLogged = ref(false)
+const accountStore = useAccountStore()
 const searchText = ref('')
 const router = useRouter()
 
 const login = () => {
-    isLogged.value = true
-    localStorage.setItem('isLogged',true)
+    router.push({ name: 'admin-login' })
 }
 
-const logout = () => {
-    isLogged.value = false
-    localStorage.removeItem('isLogged')
-    localStorage.removeItem('cart-data')
-    localStorage.removeItem('order-data')
+const logout = async () => {
+    await accountStore.logout()
+    cartStore.clearCart()
     window.location.reload()
 }
 
-onMounted(() => {
-    if (localStorage.getItem('isLogged')){
-        isLogged.value = true
-    }
+onMounted(async () => {
+    await accountStore.checkAuth()
 })
 
 const handleSearch = (event) =>{
@@ -72,7 +69,7 @@ const handleSearch = (event) =>{
                     </div>
                 </div>
                 <div>
-                    <button @click="login" v-if="!isLogged" class="btn btn-ghost">
+                    <button @click="login" v-if="!accountStore.isLoggedIn" class="btn btn-ghost">
                         Login
                     </button>
 

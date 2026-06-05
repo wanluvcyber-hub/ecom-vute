@@ -1,10 +1,15 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { useAccountStore } from "@/stores/account";
 import HomeView from "../views/users/HomeView.vue";
+// ... (rest of imports)
+
+// (keep all current imports)
 import CartView from "@/views/users/CartView.vue";
 import CheckoutView from "@/views/users/CheckoutView.vue";
 import ProfileView from "@/views/users/ProfileView.vue";
 import SearchView from "@/views/users/SearchView.vue";
 import SuccessView from "@/views/users/SuccessView.vue";
+import RegisterView from "@/views/users/RegisterView.vue";
 
 import LoginView from "@/views/admin/LoginView.vue";
 import DashboardView from "@/views/admin/DashboardView.vue";
@@ -50,6 +55,11 @@ const router = createRouter({
       path: "/success",
       name: "success",
       component: SuccessView,
+    },
+    {
+      path: "/register",
+      name: "register",
+      component: RegisterView,
     },
 
     {
@@ -101,5 +111,27 @@ const router = createRouter({
     },
   ],
 });
+
+router.beforeEach(async (to, from, next) => {
+  const accountStore = useAccountStore()
+  await accountStore.checkAuth()
+
+  const isAdminRoute = to.path.startsWith('/admin')
+  const isLoginPage = to.name === 'admin-login'
+
+  if (isAdminRoute && !isLoginPage) {
+    if (!accountStore.isLoggedIn) {
+      next({ name: 'admin-login' })
+    } else if (accountStore.role !== 'admin') {
+      next({ name: 'home' })
+    } else {
+      next()
+    }
+  } else if (isLoginPage && accountStore.isLoggedIn && accountStore.role === 'admin') {
+    next({ name: 'admin-dashboard' })
+  } else {
+    next()
+  }
+})
 
 export default router;

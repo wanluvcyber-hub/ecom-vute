@@ -10,17 +10,6 @@ import {
 } from 'vue';
 import Table from '@/icons/Table.vue';
 const adminProduct = useAdminProductStore()
-const products = ref([
-    {
-        name: 'test',
-        image: 'https://scontent.fphs3-1.fna.fbcdn.net/v/t39.30808-1/706064615_122315223392008333_6277296808766203873_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=109&ccb=1-7&_nc_sid=e99d92&_nc_ohc=xCj11IErvUgQ7kNvwH_T6es&_nc_oc=AdoDExBmd7OJYBVZ2tnI38ygDthdPTlnqCCN_HnYby5Mp7n7wdOF6MXzssp1imYbP9FIcPkUXXq5jKQTa88EalNg&_nc_zt=24&_nc_ht=scontent.fphs3-1.fna&_nc_gid=rbxch97eJ-8LVG4CsvqF9Q&_nc_ss=782a8&oh=00_Af41yJr_mlhhF5o1CnFJmzu-X-4T3CVV6dJ7t3dX5AoqQQ&oe=6A1D8346',
-        price: 200,
-        quantity: 20,
-        remainQuantiy: 11,
-        status: 'open',
-        updatedAt: (new Date()).toISOString()
-    }
-])
 
 onMounted(() => {
     adminProduct.loadProducts()

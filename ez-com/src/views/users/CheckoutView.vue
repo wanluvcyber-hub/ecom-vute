@@ -33,9 +33,11 @@ const userFormData = reactive({
 const router = useRouter()
 const cartStore = useCartStore()
 
-const payment = () =>{
-  cartStore.placeorder(userFormData)
-  router.push({name:'success'})
+const payment = async () =>{
+  const success = await cartStore.placeorder(userFormData)
+  if (success) {
+    router.push({name:'success'})
+  }
 }
 
 

@@ -1,38 +1,38 @@
 import { defineStore } from "pinia";
+import { supabase } from '@/utils/supabase'
 
 export const useAdminOrderStore = defineStore("admin-order", {
   state: () => ({
-    list: [
-      {
-        no: "A112234",
-        customerName: "นายทดสอบ นะ",
-        totalPrice: "25,000",
-        status: "Payment Completed",
-        address: "111/892 Nonthaburi Thailand 99999",
-        paymentMethod: "Credit card",
-        updatedAt: "9/15/2023, 11:50:24 PM",
-        products: [
-          {
-            name: "ทดสอบ",
-            description: "รายละเอียดสินค้า 1",
-            imageUrl:
-              "https://fastly.picsum.photos/id/928/200/200.jpg?hmac=5MQxbf-ANcu87ZaOn5sOEObpZ9PpJfrOImdC7yOkBlg",
-            quantity: 1,
-            price: "13,000",
-          },
-          {
-            name: "ทดสอบ 2",
-            description: "รายละเอียดสินค้า 2",
-            imageUrl:
-              "https://fastly.picsum.photos/id/59/200/200.jpg?hmac=q9DbuoFh1L_NWnGk3AGdzuEOlg5bBW4JmBSgWmQdT74",
-            quantity: 1,
-            price: "12,000",
-          },
-        ],
-      },
-    ],
+    list: [],
+    loaded: false
   }),
   actions: {
+    async loadOrders() {
+      try {
+        const { data, error } = await supabase
+          .from('orders')
+          .select('*')
+          .order('created_at', { ascending: false })
+
+        if (error) throw error
+
+        if (data) {
+          this.list = data.map(order => ({
+            no: order.order_number,
+            customerName: order.customer_name || 'N/A',
+            totalPrice: order.total_price,
+            status: order.status,
+            address: order.shipping_address,
+            paymentMethod: order.payment_method,
+            updatedAt: order.updated_at || order.created_at,
+            products: order.products || [] // Assuming products might be stored as JSON or fetched separately
+          }))
+          this.loaded = true
+        }
+      } catch (error) {
+        console.error('Error loading orders:', error.message)
+      }
+    },
     getOrder(index) {
       return this.list[index];
     },

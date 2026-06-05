@@ -21,7 +21,7 @@ const formData = [
     },
     {
         name: 'Quantity',
-        field: 'Quantity'
+        field: 'quantity'
     },
     {
         name: 'About',
@@ -30,11 +30,14 @@ const formData = [
 ]
 
 const adminProduct = useAdminProductStore()
-const updateProduct = () => {
+const updateProduct = async () => {
+    // Ensure status is lowercase to match DB check constraint
+    productData.status = String(productData.status).toLowerCase()
+    
     if (mode.value === 'EDIT') {
-        adminProduct.updateProduct(productIndex.value,productData)
+        await adminProduct.updateProduct(productIndex.value, productData)
     } else {
-        adminProduct.addProduct(productData)
+        await adminProduct.addProduct(productData)
     }
 
     router.push({ name: 'admin-products-list' })
@@ -42,11 +45,11 @@ const updateProduct = () => {
 
 const productData = reactive({
     name: '',
-    ImageUrl: '',
+    imageUrl: '', // Fixed capitalization
     price: 0,
     quantity: 0,
     about: '',
-    status: ''
+    status: 'open' // Default value
 })
 
 const productIndex = ref(-1)

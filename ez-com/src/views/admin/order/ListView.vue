@@ -1,10 +1,15 @@
 <script setup>
+    import { onMounted } from 'vue';
     import AdminLayout from '@/layouts/AdminLayout.vue';
     import Table from '@/icons/Table.vue';
     import { useAdminOrderStore } from '@/stores/user/admin/order';
     import { RouterLink } from 'vue-router';
 
     const adminOrderStore = useAdminOrderStore()
+
+    onMounted(() => {
+        adminOrderStore.loadOrders()
+    })
 </script>
 <template>
     <AdminLayout>

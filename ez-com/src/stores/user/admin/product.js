@@ -1,46 +1,103 @@
 import { defineStore } from "pinia";
+import { supabase } from '@/utils/supabase'
 
 export const useAdminProductStore = defineStore("admin-product", {
   state: () => ({
     list: [],
-    loaded:false
+    loaded: false
   }),
-  actions:
-  {
-    loadProducts(){
-      const product = localStorage.getItem('admin-products')
-      if(product){
-        this.list = JSON.parse(product)
-        this.loaded = true
+  actions: {
+    async loadProducts() {
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .order('updated_at', { ascending: false })
+
+        if (error) throw error
+
+        if (data) {
+          this.list = data.map(product => ({
+            ...product,
+            imageUrl: product.image_url,
+            remainQuantiy: product.remain_quantity,
+            updatedAt: product.updated_at
+          }))
+          this.loaded = true
+        }
+      } catch (error) {
+        console.error('Error loading products:', error.message)
       }
     },
-    getProducts(index){
-      if (!this.loaded){
-        this.loadProducts()
+    getProducts(index) {
+      return this.list[index]
+    },
+    async addProduct(productData) {
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .insert([
+            {
+              name: productData.name,
+              image_url: productData.imageUrl,
+              price: productData.price,
+              quantity: productData.quantity,
+              remain_quantity: productData.quantity,
+              status: productData.status,
+              updated_at: new Date().toISOString()
+            }
+          ])
+          .select()
+
+        if (error) throw error
+
+        if (data) {
+          this.list.push(data[0])
+        }
+      } catch (error) {
+        console.error('Error adding product:', error.message)
       }
-        return this.list[index]
     },
-    addProduct (productData){
-        productData.remainQuantiy = productData.quantity
-        productData.updatedAt = new Date().toISOString()
-        this.list.push(productData)
-        localStorage.setItem('admin-products',JSON.stringify(this.list))
+    async updateProduct(index, productData) {
+      try {
+        const id = this.list[index].id
+        const { data, error } = await supabase
+          .from('products')
+          .update({
+            name: productData.name,
+            image_url: productData.imageUrl,
+            price: productData.price,
+            quantity: productData.quantity,
+            remain_quantity: productData.quantity,
+            status: productData.status,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', id)
+          .select()
+
+        if (error) throw error
+
+        if (data) {
+          this.list[index] = data[0]
+        }
+      } catch (error) {
+        console.error('Error updating product:', error.message)
+      }
     },
-    // มีท่าที่สวยกว่านี้ การบ้าน
-    updateProduct(index,productData){
-        this.list[index].name = productData.name
-        this.list[index].imageUrl = productData.imageUrl
-        this.list[index].price = productData.price
-        this.list[index].quantity = productData.quantity
-        this.list[index].remainQuantiy = productData.quantity
-        this.list[index].status = productData.state
-        productData.updatedAt = new Date().toISOString()
-        localStorage.setItem('admin-products',JSON.stringify(this.list))
-        
-    },
-    removeProduct (index){
-        this.list.splice(index,1)
-        localStorage.setItem('admin-products',JSON.stringify(this.list))
+    async removeProduct(index) {
+      try {
+        const id = this.list[index].id
+        const { error } = await supabase
+          .from('products')
+          .delete()
+          .eq('id', id)
+
+        if (error) throw error
+
+        this.list.splice(index, 1)
+      } catch (error) {
+        console.error('Error removing product:', error.message)
+      }
     }
   }
 });

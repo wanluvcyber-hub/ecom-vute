@@ -5,13 +5,19 @@ import Trash from '@/icons/Trash.vue';
 import Table from '@/icons/Table.vue';
 import { RouterLink } from 'vue-router';
 
+import { onMounted } from 'vue';
 import { useAdminUserStore } from '@/stores/user/admin/user';
 
 const adminUserStore = useAdminUserStore()
-const changeStatus = (index) =>{
+
+onMounted(() => {
+    adminUserStore.loadUsers()
+})
+
+const changeStatus = async (index) =>{
     let selectedUser = adminUserStore.list[index]
-    selectedUser.status = selectedUser.status === 'acticve' ? 'inactive' : 'acrive'
-    adminUserStore.updateUser(selectedUser)
+    const newStatus = selectedUser.status === 'active' ? 'inactive' : 'active'
+    await adminUserStore.updateUser(index, { ...selectedUser, status: newStatus })
 }
 </script>
 <template>
